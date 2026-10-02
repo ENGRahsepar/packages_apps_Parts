@@ -23,6 +23,12 @@
           android:fragment="org.lineageos.lineageparts.health.ChargingControlSettings"
           lineage:xmlRes="@xml/charging_control_settings" />
 
+    <part android:key="extra_battery"
+          android:title="@string/extra_battery_title"
+          android:summary="@string/extra_battery_summary"
+          android:fragment="org.lineageos.lineageparts.battery.ExtraBatteryOptions"
+          lineage:xmlRes="@xml/extra_battery_options" />
+
     <!--<part android:key="battery_lights"
           android:title="@string/battery_light_title"
           android:fragment="org.lineageos.lineageparts.notificationlight.BatteryLightSettings"
