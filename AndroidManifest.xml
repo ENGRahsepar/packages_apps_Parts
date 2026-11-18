@@ -60,6 +60,10 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".battery.ForceFastChargeService"
+            android:exported="false" />
+
         <receiver
             android:name=".PartsUpdater"
             android:enabled="true"

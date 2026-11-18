@@ -8,6 +8,17 @@
         android:summary="@string/bypass_summary_off"
         app:singleLineTitle="false" />
 
+    <SwitchPreferenceCompat
+        android:key="force_fast_charge"
+        android:title="@string/fast_charge_title"
+        android:summary="@string/fast_charge_summary_off"
+        app:singleLineTitle="false" />
+
+    <Preference
+        android:key="force_fast_charge_status"
+        android:title="@string/fast_charge_status_title"
+        android:selectable="false" />
+
     <Preference
         android:key="bypass_status"
         android:title="@string/bypass_status_title"
