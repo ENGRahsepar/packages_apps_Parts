@@ -680,12 +680,12 @@
     <string name="bypass_summary_unplugged">Connect a charger to use bypass</string>
     <string name="fast_charge_title">Force Fast Charge</string>
     <string name="fast_charge_summary_off">Off: stock charging behavior</string>
-    <string name="fast_charge_summary_active">Active over USB PD: approximately 25 W maximum</string>
+    <string name="fast_charge_summary_active">6 A limit set over USB PD; thermal and battery limits still apply</string>
     <string name="fast_charge_summary_waiting_pd">Enabled: waiting for a USB-PD charger</string>
     <string name="fast_charge_summary_waiting_safe">Enabled: waiting for safe charging conditions</string>
     <string name="fast_charge_summary_temperature">Disabled automatically at 50°C or above</string>
     <string name="fast_charge_status_title">Force Fast Charge status</string>
-    <string name="fast_charge_status_value">PD: %1$s | Limit: %2$s mA | Battery: %3$s°C</string>
+    <string name="fast_charge_status_value">PD: %1$s | Cap: %2$s mA | Now: %4$s mA / %5$s W | Battery: %3$s°C</string>
     <string name="fast_charge_temperature_unavailable">Force Fast Charge is unavailable at 50°C or above</string>
     <string name="bypass_status_title">Status</string>
     <string name="bypass_status_value">Node: %1$s - Charger: %2$s</string>

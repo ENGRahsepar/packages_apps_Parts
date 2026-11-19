@@ -109,6 +109,9 @@ public class PartsActivity extends CollapsingToolbarBaseActivity implements
 
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
+            // CollapsingToolbarLayout draws both the expanded and collapsed titles.
+            // A second ActionBar title can overlap the fragment while scrolling.
+            getActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 

@@ -38,6 +38,10 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
     private static final String KEY_FAST_STATUS = "force_fast_charge_status";
 
     private static final String NODE_BYPASS = "/sys/class/power_supply/usb/bypass_charging";
+    private static final String NODE_BATTERY_CURRENT =
+            "/sys/class/power_supply/battery/current_now";
+    private static final String NODE_BATTERY_VOLTAGE =
+            "/sys/class/power_supply/battery/voltage_now";
 
     private SwitchPreferenceCompat mBypassPref;
     private SwitchPreferenceCompat mFastChargePref;
@@ -61,7 +65,7 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
         super.onActivityCreated(savedInstanceState);
 
         addPreferencesFromResource(R.xml.extra_battery_options);
-        requireActivity().getActionBar().setTitle(R.string.extra_battery_title);
+        requireActivity().setTitle(R.string.extra_battery_title);
 
         final PreferenceScreen prefSet = getPreferenceScreen();
         mBypassPref = prefSet.findPreference(KEY_BYPASS);
@@ -151,11 +155,13 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
         final String realType = readNode(ForceFastChargeService.NODE_REAL_TYPE);
         final boolean pd = ForceFastChargeService.isUsbPd(realType);
         final int limit = readIntNode(ForceFastChargeService.NODE_CURRENT_LIMIT);
+        final int current = readIntNode(NODE_BATTERY_CURRENT);
+        final int voltage = readIntNode(NODE_BATTERY_VOLTAGE);
         final boolean active = enabled && charging && pd && temperature >= 0
                 && temperature < ForceFastChargeService.MAX_TEMPERATURE
                 && limit == ForceFastChargeService.FAST_CHARGE_LIMIT_UA;
         final String signature = enabled + "|" + charging + "|" + realType + "|"
-                + temperature + "|" + limit;
+                + temperature + "|" + limit + "|" + current + "|" + voltage;
         if (signature.equals(mLastFastSignature)) {
             return;
         }
@@ -179,8 +185,14 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
         final String limitText = limit > 0 ? Integer.toString(limit / 1000) : "?";
         final String temperatureText = temperature >= 0
                 ? String.format(Locale.US, "%.1f", temperature / 10.0f) : "?";
+        final String currentText = current == -1
+                ? "?" : Integer.toString(Math.abs(current) / 1000);
+        final String powerText = current == -1 || voltage <= 0 ? "?"
+                : String.format(Locale.US, "%.1f",
+                        Math.abs((double) current * voltage) / 1_000_000_000_000.0);
         mFastStatusPref.setSummary(getString(R.string.fast_charge_status_value,
-                realType.isEmpty() ? "Unknown" : realType, limitText, temperatureText));
+                realType.isEmpty() ? "Unknown" : realType, limitText, temperatureText,
+                currentText, powerText));
     }
 
     private boolean isCharging() {
