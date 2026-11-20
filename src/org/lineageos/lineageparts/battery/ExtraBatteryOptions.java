@@ -105,14 +105,15 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
             return true;
         }
         if (preference == mFastChargePref) {
-            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                    .putBoolean(ForceFastChargeService.KEY_ENABLED, enable).apply();
             if (enable && getBatteryTemperature() >= ForceFastChargeService.MAX_TEMPERATURE) {
+                ForceFastChargeService.start(requireContext(), false);
                 Toast.makeText(requireContext(), R.string.fast_charge_temperature_unavailable,
                         Toast.LENGTH_SHORT).show();
                 refreshUi();
                 return false;
             }
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                    .putBoolean(ForceFastChargeService.KEY_ENABLED, enable).apply();
             ForceFastChargeService.start(requireContext(), enable);
             refreshUi();
             return true;
@@ -157,11 +158,13 @@ public class ExtraBatteryOptions extends SettingsPreferenceFragment implements
         final int limit = readIntNode(ForceFastChargeService.NODE_CURRENT_LIMIT);
         final int current = readIntNode(NODE_BATTERY_CURRENT);
         final int voltage = readIntNode(NODE_BATTERY_VOLTAGE);
-        final boolean active = enabled && charging && pd && temperature >= 0
+        final boolean forced = "1".equals(
+                readNode(ForceFastChargeService.NODE_FORCE_FAST_CHARGE));
+        final boolean active = enabled && charging && pd && forced && temperature >= 0
                 && temperature < ForceFastChargeService.MAX_TEMPERATURE
                 && limit == ForceFastChargeService.FAST_CHARGE_LIMIT_UA;
         final String signature = enabled + "|" + charging + "|" + realType + "|"
-                + temperature + "|" + limit + "|" + current + "|" + voltage;
+                + temperature + "|" + limit + "|" + current + "|" + voltage + "|" + forced;
         if (signature.equals(mLastFastSignature)) {
             return;
         }

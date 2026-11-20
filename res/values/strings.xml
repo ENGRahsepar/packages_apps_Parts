@@ -680,7 +680,7 @@
     <string name="bypass_summary_unplugged">Connect a charger to use bypass</string>
     <string name="fast_charge_title">Force Fast Charge</string>
     <string name="fast_charge_summary_off">Off: stock charging behavior</string>
-    <string name="fast_charge_summary_active">6 A limit set over USB PD; thermal and battery limits still apply</string>
+    <string name="fast_charge_summary_active">Forced 6 A request until full; hardware protections still apply</string>
     <string name="fast_charge_summary_waiting_pd">Enabled: waiting for a USB-PD charger</string>
     <string name="fast_charge_summary_waiting_safe">Enabled: waiting for safe charging conditions</string>
     <string name="fast_charge_summary_temperature">Disabled automatically at 50°C or above</string>

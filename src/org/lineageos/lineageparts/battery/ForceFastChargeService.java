@@ -23,7 +23,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 
-/** Applies a conservative 25 W-class current cap only during USB-PD charging. */
+/** Requests 6 A charging until full during safe USB-PD charging. */
 public final class ForceFastChargeService extends Service {
     private static final String TAG = "ForceFastCharge";
     private static final String EXTRA_SET_ENABLED = "set_enabled";
@@ -32,6 +32,8 @@ public final class ForceFastChargeService extends Service {
     public static final String KEY_ENABLED = "force_fast_charge";
     public static final String NODE_CURRENT_LIMIT =
             "/sys/class/power_supply/battery/constant_charge_current";
+    public static final String NODE_FORCE_FAST_CHARGE =
+            "/sys/class/power_supply/battery/force_fast_charge";
     public static final String NODE_REAL_TYPE = "/sys/class/power_supply/usb/real_type";
 
     /* 6 A at approximately 4.2 V is approximately 25 W at the battery. */
@@ -154,13 +156,18 @@ public final class ForceFastChargeService extends Service {
                 // Persist before changing the hardware limit so it can always be restored.
                 prefs.edit().putInt(KEY_PREVIOUS_LIMIT, previous).commit();
             }
-            writeLimit(FAST_CHARGE_LIMIT_UA);
+            if (writeLimit(FAST_CHARGE_LIMIT_UA)) {
+                writeForceFastCharge(true);
+            } else {
+                writeForceFastCharge(false);
+            }
         } else {
             restorePreviousLimit(prefs);
         }
     }
 
     private void restorePreviousLimit(SharedPreferences prefs) {
+        writeForceFastCharge(false);
         final int previous = prefs.getInt(KEY_PREVIOUS_LIMIT, -1);
         if (previous > 0 && writeLimit(previous)) {
             prefs.edit().remove(KEY_PREVIOUS_LIMIT).apply();
@@ -184,6 +191,20 @@ public final class ForceFastChargeService extends Service {
             return true;
         } catch (Exception e) {
             Log.w(TAG, "Unable to write charging-current limit", e);
+            return false;
+        }
+    }
+
+    private boolean writeForceFastCharge(boolean enable) {
+        final String value = enable ? "1" : "0";
+        if (value.equals(readNode(NODE_FORCE_FAST_CHARGE))) {
+            return true;
+        }
+        try (FileWriter writer = new FileWriter(NODE_FORCE_FAST_CHARGE)) {
+            writer.write(value);
+            return true;
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to change forced fast-charge mode", e);
             return false;
         }
     }
